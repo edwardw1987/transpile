@@ -1,0 +1,7 @@
+class {{ classname }}({{ superclass }})
+    {% for method in methods %}
+    def {{ method.name }}(self):
+    {%- for line in method.lines %}
+        {{ line -}}
+    {% endfor %} 
+    {% endfor %} 
