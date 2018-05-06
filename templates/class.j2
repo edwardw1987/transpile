@@ -1,10 +1,12 @@
 {% extends "base.j2" %}
 {% block body %}
-class {{ classname }}({{ superclass }})
+class {{ classname }}({{ superclass }}):
+
 {% for method in methods %}
     def {{ method.name }}(self):
 {% for line in method.lines %}
         {{ line }}
-{% endfor %} 
+{% endfor %}
+
 {% endfor %} 
 {% endblock %}
