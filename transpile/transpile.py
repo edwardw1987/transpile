@@ -3,19 +3,25 @@ from config import templates_dir
 from util import hump2underline
 import os
 
-
-class Method(object):
-
-    @property
-    def name(self):
-        return hump2underline(self.__class__.__name__)
+class Snippet(object):
 
     def get_translator(self):
         raise NotImplementedError()
 
     @property
     def lines(self):
-        return [trans.get_result() for trans in self.get_translator()]
+        ret = []
+        for trans in self.get_translator():
+            if isinstance(trans, Translator):
+                ret.append(trans.get_result())
+            elif isinstance(trans, basestring):
+                ret.append(trans)
+        return ret
+
+    @property
+    def name(self):
+        return hump2underline(self.__class__.__name__)
+
 
 
 def translate(s='', args=None, kwargs=None, quote=False):
@@ -89,11 +95,11 @@ class Transpile(object):
         self.trans = trans
         self.jinja = JinjaLoader(templates_dir)
 
-    def _render_snippet(self, template, **context):
+    def _render(self, template, **context):
         return self.jinja.render(template, **context)
 
     def render_python(self, **context):
-        return self._render_snippet("python.j2", **context)
+        return self._render("python.j2", **context)
 
     def get_result(self):
         return os.linesep.join(t.get_result() for t in self.trans)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-{% for import_package in imports %}
-{{ import_package }}
+{% for line in imports.lines %}
+{{ line }}
 {% endfor %}
 {# preserve 2 lines #}
 
@@ -17,9 +17,9 @@ class {{ class.name }}({{ class.superclass }}):
 
 {% endfor %} 
 {% endfor %} 
-{% if main_entrys %}
+{%- if main -%}
 if __name__ == "__main__":
-{% for e in main_entrys %}
-    {{ e }}
+{% for line in main.lines %}
+    {{ line }}
 {% endfor %}
 {% endif %}

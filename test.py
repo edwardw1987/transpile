@@ -1,9 +1,9 @@
-from transpile import Transpile, File, Method
+from transpile import Transpile, File, Snippet
 from transpile import translate as _
 from transpile.template import PyClassRender
 
 
-class Method2(Method):
+class Method2(Snippet):
 
     def get_translator(self):
         return [
@@ -18,7 +18,7 @@ class Method2(Method):
         ]
 
 
-class TestAbc(Method):
+class TestAbc(Snippet):
 
     def get_ipmi_cmd(self, args):
         return [
@@ -42,25 +42,33 @@ class TestAbc(Method):
 
 
 
-class Method1(Method):
+class Method1(Snippet):
     def get_translator(self):
         return [
             _("print 'Hello, world!'")
         ]
 
+class Main(Snippet):
+    def get_translator(self):
+        return [
+            _("unittest.main()")
+        ]
+
+class Imports(Snippet):
+    def get_translator(self):
+        return [
+            "import unittest",
+            "import subprocess"
+        ]
+
 snippet = Transpile().render_python(
-    imports=[
-    "import unittest",
-    "import subprocess",
-    ],
+    imports=Imports(),
     class_renders=[
         PyClassRender("TestCase_1", [Method1(), Method2(), TestAbc()], "unittest.TestCase"),
         PyClassRender("TestCase_2", [TestAbc()], "unittest.TestCase"),
         PyClassRender("TestCase_3", [Method1(), TestAbc()], "unittest.TestCase"),
     ],
-    main_entrys=[
-        "unittest.main()"
-    ]
+    main=Main()
 )
 print Transpile([
     _("from flask import Flask"),
