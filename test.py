@@ -1,5 +1,6 @@
 from transpile import Transpile, File, Method
 from transpile import translate as _
+from transpile.template import PyClassRender
 
 
 class Method2(Method):
@@ -47,12 +48,28 @@ class Method1(Method):
             _("print 'Hello, world!'")
         ]
 
-snippet = Transpile().render_class(
-    classname="MyClass", superclass="object", methods=[
-        Method1(),
-        Method2(),
-        TestAbc(),
+snippet = Transpile().render_python(
+    imports=[
+    "import unittest",
+    "import subprocess",
+    ],
+    class_renders=[
+        PyClassRender("TestCase_1", [Method1(), Method2(), TestAbc()], "unittest.TestCase"),
+        PyClassRender("TestCase_2", [TestAbc()], "unittest.TestCase"),
+        PyClassRender("TestCase_3", [Method1(), TestAbc()], "unittest.TestCase"),
+    ],
+    main_entrys=[
+        "unittest.main()"
     ]
 )
+print Transpile([
+    _("from flask import Flask"),
+    _("app = Flask(__name__)"),
+    _(),
+    _("@app.route", args=("/",)),
+    _("def index():"),
+    _("return").join("Hello, world!", quote=True).indent()
+    ]).get_result()
+
 
 File(snippet).save("snippet_1.py")

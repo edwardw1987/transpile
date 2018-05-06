@@ -1,5 +1,13 @@
 from jinja2 import Environment, FileSystemLoader
 
+
+class PyClassRender(object):
+    def __init__(self, name, methods, superclass='object'):
+        self.name = name
+        self.superclass = superclass
+        self.methods = methods
+
+
 class JinjaLoader(object):
     def __init__(self, template_path):
         self.template_path = template_path

@@ -1,6 +1,7 @@
 from template import JinjaLoader
 from config import templates_dir
 from util import hump2underline
+import os
 
 
 class Method(object):
@@ -17,7 +18,7 @@ class Method(object):
         return [trans.get_result() for trans in self.get_translator()]
 
 
-def translate(s, args=None, kwargs=None, quote=False):
+def translate(s='', args=None, kwargs=None, quote=False):
     t = Translator(s)
     if args is not None or kwargs is not None:
         """ callable """
@@ -44,7 +45,7 @@ class Translator(object):
         else:
             self._result = chr(32) * width + self._result
         return self
-        
+
     def get_result(self):
         self._translate()
         text_spans = [self._result] + [j.get_result() for j in self._joins]
@@ -84,14 +85,18 @@ class Translator(object):
 
 class Transpile(object):
 
-    def __init__(self):
+    def __init__(self, trans=[]):
+        self.trans = trans
         self.jinja = JinjaLoader(templates_dir)
 
     def _render_snippet(self, template, **context):
         return self.jinja.render(template, **context)
 
-    def render_class(self, **context):
-        return self._render_snippet("class.j2", **context)
+    def render_python(self, **context):
+        return self._render_snippet("python.j2", **context)
+
+    def get_result(self):
+        return os.linesep.join(t.get_result() for t in self.trans)
 
 
 class File(object):

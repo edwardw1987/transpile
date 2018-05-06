@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+{% for import_package in imports %}
+{{ import_package }}
+{% endfor %}
+{# preserve 2 lines #}
+
+
+{% for class in class_renders %}
+class {{ class.name }}({{ class.superclass }}):
+
+{% for method in class.methods %}
+    def {{ method.name }}(self):
+{% for line in method.lines %}
+        {{ line }}
+{% endfor %}
+
+{% endfor %} 
+{% endfor %} 
+{% if main_entrys %}
+if __name__ == "__main__":
+{% for e in main_entrys %}
+    {{ e }}
+{% endfor %}
+{% endif %}
