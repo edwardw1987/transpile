@@ -1,11 +1,6 @@
 from template import JinjaLoader
 from config import templates_dir
 from util import hump2underline
-import keyword
-
-
-class InvalidKeyword(Exception):
-    pass
 
 
 class Method(object):
@@ -22,20 +17,14 @@ class Method(object):
         return [trans.get_result() for trans in self.get_translator()]
 
 
-def translate(s, verb=False, raw=False, callable=False, args=None, kwargs=None):
+def translate(s, args=None, kwargs=None, quote=False):
     t = Translator(s)
-    if raw is True:
-        t.set_result(s, quote=True)
-    elif verb is True:
-        t.set_result(s)
-    elif callable is True:
+    if args is not None or kwargs is not None:
         """ callable """
         t.p_args = args
         t.k_args = kwargs
     else:
-        if not keyword.iskeyword(s):
-            raise InvalidKeyword(s)
-        t.set_result(s)
+        t.set_result(s, quote)
     return t
 
 
@@ -69,13 +58,13 @@ class Translator(object):
         return self
 
     def _translate(self):
-        if self._result is None and \
-                not keyword.iskeyword(self.s):
+        if self.k_args is None and self.p_args is None:
+            return
+        if self._result is None:
             apd = ["%s" % self.quote(p) for p in self.p_args or []]
             apd += ["%s=%s" % (k, self.quote(v))
                     for k, v in (self.k_args or {}).items()]
             self._result = self.offset + "%s(%s)" % (self.s, ', '.join(apd))
-        return self
 
     def quote(self, s):
         if not s:
