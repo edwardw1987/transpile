@@ -24,9 +24,10 @@ class Snippet(object):
 
 
 
-def translate(s='', args=None, kwargs=None, quote=False):
+def translate(s='', *args, **kwargs):
+    quote = kwargs.pop("quote", False)
     t = Translator(s)
-    if args is not None or kwargs is not None:
+    if args or kwargs:
         """ callable """
         t.p_args = args
         t.k_args = kwargs
