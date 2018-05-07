@@ -4,10 +4,26 @@ from util import hump2underline
 import os
 
 class Snippet(object):
-
+    
+    def __init__(self):
+        self._afters = []
+    
     def get_translator(self):
         raise NotImplementedError()
+    
+    def after(self, snippet):
+        self._afters.append(snippet)
+        return self
 
+    def get_after_snippets(self):
+        return self._afters
+
+    def get_after_lines(self):
+        ret = []
+        for snippet in self.get_after_snippets():
+            ret.extend(snippet.lines)
+        return ret
+    
     @property
     def lines(self):
         ret = []
@@ -16,6 +32,7 @@ class Snippet(object):
                 ret.append(trans.get_result())
             elif isinstance(trans, basestring):
                 ret.append(trans)
+        ret.extend(self.get_after_lines())
         return ret
 
     @property
